@@ -10,19 +10,17 @@ slug: /guide/configuration
 ```yml
 logging: true
 imagefolder: mapImages
-pythonfolder: pythonScripts
 ```
 
 | Key | Default | Read by | Effect |
 | --- | --- | --- | --- |
-| `logging` | `true` | `PEUtils.log` | When true, creating a missing map id logs `Map created with id` plus the id. Missing images and missing Python files use Denizen `Debug.echoError` and ignore this key. |
+| `logging` | `true` | `PEUtils.log` | When true, creating a missing map id logs `Map created with id` plus the id. A missing image uses Denizen `Debug.echoError` and ignores this key. |
 | `imagefolder` | `mapImages` | `PEImageMap` | Folder under `plugins/PEUtils/` that holds png files. The command joins this name, a slash, and `filename`. |
-| `pythonfolder` | `pythonScripts` | `PEPyton` | Folder under `plugins/PEUtils/` that holds `.py` files. The command joins this name, a slash, and `filename`. |
 
-Both folders are created in `onEnable` only. `/reload` calls `reloadConfig()` and does not create a folder you renamed. Restart the server after changing `imagefolder` or `pythonfolder` if the new directory does not exist yet.
+The image folder is created in `onEnable` only. `/reload` calls `reloadConfig()` and does not create a folder you renamed. Restart the server after changing `imagefolder` if the new directory does not exist yet.
 
-Commands read the config at execution time. After a successful config reload, the next `peimagemap` or `pepyton` uses the new folder name.
+`peimagemap` reads the config at execution time. After a successful config reload, the next `peimagemap` uses the new folder name.
 
-If `imagefolder` or `pythonfolder` is missing from the file, the command passes a null folder into the path and looks under `plugins/PEUtils/null/`. The enable path falls back to `mapImages` and `pythonScripts` only when it creates directories. Keep the keys in the file.
+If `imagefolder` is missing from the file, the command passes a null folder into the path and looks under `plugins/PEUtils/null/`. The enable path falls back to `mapImages` only when it creates the directory. Keep the key in the file.
 
 `logging: false` does not silence Denizen debug errors.

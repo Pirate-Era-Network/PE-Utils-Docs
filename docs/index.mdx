@@ -9,11 +9,9 @@ title: PEUtils
 
 </div>
 
-PEUtils is a Paper plugin that adds two Denizen commands and one Bukkit command.
+PEUtils is a Paper plugin that adds one Denizen command and one Bukkit command.
 
 `peimagemap` paints a png onto a Minecraft map id. The image stays on disk under the plugin data folder. It is not written into Denizen `saves.yml`.
-
-`pepyton` runs a local Python file with `python3`. The registered command name is `PEPyton`.
 
 `/reload` reloads `config.yml` for this plugin only.
 
@@ -22,7 +20,6 @@ PEUtils does not add Denizen tags, mechanisms, events, or object types.
 ## Prerequisites
 
 - [Paper](https://papermc.io/) 1.21.8, the API this project compiles against. `plugin.yml` declares `api-version: 1.20`.
-- [Denizen](https://denizenscript.com/). `onEnable` registers both commands on `DenizenCore`. `plugin.yml` does not list Denizen under `depend`, so enable Denizen before PEUtils or command registration fails.
-- `python3` on the server PATH, only if you use `pepyton`.
+- [Denizen](https://denizenscript.com/). `onEnable` registers `PEImageMap` on `DenizenCore`. `plugin.yml` does not list Denizen under `depend`, so enable Denizen before PEUtils or command registration fails.
 
 The plugin jar is built from the [PEUtils](https://github.com/PirateEra/PEUtils) repository. `mvn package` writes `target/PEUtils-1.0-SNAPSHOT.jar`.
