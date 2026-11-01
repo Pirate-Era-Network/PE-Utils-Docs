@@ -5,7 +5,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 const config: Config = {
     title: "PE-Utils Docs",
     tagline: "Documentation for the PEUtils plugin.",
-    favicon: "img/favicon.ico",
+    favicon: "img/favicon.svg",
 
     url: "https://pirate-era-network.github.io",
     baseUrl: "/PE-Utils-Docs/",
