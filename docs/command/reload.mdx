@@ -1,0 +1,37 @@
+---
+sidebar_position: 3
+sidebar_custom_props:
+    description: Reloads PEUtils config.yml.
+---
+
+# `reload`
+
+```text
+/reload
+```
+
+Bukkit command registered in `plugin.yml`. It is not a Denizen command.
+
+The executor calls `reloadConfig()` and sends the sender a green message: `[PEUtils] configuration reloaded!`
+
+It does not recreate `imagefolder` or `pythonfolder`. It does not re-register Denizen commands. It does not stop a Python process that is already running. It does not repaint maps.
+
+`plugin.yml` sets no permission node, no aliases, and no usage text beyond `/<command>`.
+
+Paper also ships a `reload` command. If that command is the one that runs, the server reloads instead of this plugin. Confirm the chat line before treating a config edit as live.
+
+## Examples
+
+```text
+/reload
+```
+
+Expected PEUtils reply:
+
+```text
+[PEUtils] configuration reloaded!
+```
+
+## See Also
+
+- Guide: [Configuration](/PE-Utils-Docs/guide/configuration)

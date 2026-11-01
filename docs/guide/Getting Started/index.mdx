@@ -1,0 +1,51 @@
+---
+sidebar_position: 1
+---
+
+# Getting Started
+
+PEUtils paints map images from files on disk, and it can start a local Python script from Denizen. This page is the install path.
+
+## Prerequisites
+
+- Paper 1.21.8. The Maven build uses `paper-api` `1.21.8-R0.1-SNAPSHOT`. `plugin.yml` sets `api-version: 1.20`.
+- Denizen `1.3.0-SNAPSHOT` or a build that still exposes `DenizenCore.commandRegistry`.
+- Java 21 to run Paper 1.21. The plugin itself is compiled with source and target `1.8`.
+- `python3` available as a command on the machine that runs the server, if you call `pepyton`.
+
+You should already know how to run a Denizen command and how a `filled_map` item uses a map id. Denizen's guide is [here](https://guide.denizenscript.com/).
+
+## Installation
+
+Clone [PEUtils](https://github.com/PirateEra/PEUtils) and package it:
+
+```bash
+mvn package
+```
+
+Copy `target/PEUtils-1.0-SNAPSHOT.jar` into the server `plugins` folder. Leave `original-PEUtils-1.0-SNAPSHOT.jar` out. That file is the unshaded copy Maven also writes.
+
+Restart the server. On enable, PEUtils does four things:
+
+1. Saves the default `config.yml` if the file is missing.
+2. Registers the Bukkit command `reload`.
+3. Registers the Denizen commands `PEImageMap` and `PEPyton`.
+4. Creates `plugins/PEUtils/mapImages` and `plugins/PEUtils/pythonScripts` when those folders are missing. The folder names come from `imagefolder` and `pythonfolder` in config.
+
+`onDisable` does not unload renderers or stop Python processes.
+
+## Command names
+
+Denizen command lookup is case insensitive. Scripts in this network call the map command as `peimagemap`.
+
+The Python command is registered as `PEPyton`. The source name is spelled that way. `pepython` is not a registered command.
+
+The comment block above `PEImageMap` in the Java file is older than the parser. It says the command takes two arguments and omits `world`. The parser requires `id`, `world`, and `filename`. Follow these docs, not that comment block.
+
+## What can go wrong
+
+Denizen missing, or PEUtils enabling first: `onEnable` calls `DenizenCore.commandRegistry.registerCommand` with no null check. The plugin fails to enable. There is no `depend: [Denizen]` line in `plugin.yml` to force load order.
+
+`python3` missing: `pepyton` still schedules the task. The process start throws, and the stack trace goes to the server log. Denizen does not receive the exit code or the script output.
+
+The Bukkit command is named `reload`. Paper already uses that name for the server reload command. Which executor runs depends on which registration wins. The PEUtils executor only reloads this plugin's config and sends `[PEUtils] configuration reloaded!`.

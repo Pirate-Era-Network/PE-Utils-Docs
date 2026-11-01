@@ -1,0 +1,63 @@
+---
+sidebar_position: 3
+slug: /guide/image-maps
+---
+
+# Image Maps
+
+`peimagemap` attaches a file from the image folder to a Bukkit map id. The command does not give an item. Your script places a `filled_map` with that id, usually inside an item frame.
+
+Pirate Era uses this for bounty posters and sprays. Poster pngs live under `mapImages/posters/`. Spray pngs live under `mapImages/sprays/`. The `filename` argument is the path under the image folder, not a path from the server root.
+
+## File layout
+
+Default root: `plugins/PEUtils/mapImages/`.
+
+```text
+plugins/PEUtils/mapImages/posters/bountyposter_Alice.png
+plugins/PEUtils/mapImages/sprays/queenshocked.png
+```
+
+A Denizen `filewrite` that starts in `plugins/Denizen` reaches that folder with `../PEUtils/mapImages/`. Write the file first, wait until the write finishes, then call `peimagemap`. If the png is not on disk yet, the command errors and the map stays on the vanilla renderer.
+
+## Map id
+
+`id` is the Bukkit map id, the same number you put on `filled_map[map=<id>]`.
+
+If `Bukkit.getMap(id)` already returns a view, that view is reused. Existing renderers are cleared, including the vanilla terrain renderer, and `MapImageRenderer` is added.
+
+If that id has never been created, PEUtils calls `Bukkit.createMap(world)` in a loop until the new map's id is greater than or equal to the requested id. Each pass mints a real map. A large gap between the current next id and the requested id creates that many maps. If the server's next id is already higher than the requested id, the returned view can be a different id than the one in the command, and the script still thinks it painted the requested id.
+
+Use an id that already exists, or the next id the server would mint. Do not aim a fresh server at a high id.
+
+The world argument is only used when minting. `getMap` is global. The world must already be loaded. A missing or unloaded world prints `The provided world does not exist or is not loaded` and does not change any map.
+
+When a new map is minted and `logging` is true, the console gets `Map created with id` plus the created id. There is no space before the number.
+
+## Canvas size
+
+A Minecraft map canvas is 128 by 128 pixels. `ImageIO` reads the file. The renderer then resizes to 128 by 128 only when both the width and the height are not already 128. An image that is 128 wide and some other height is drawn at its original size, and the map clips it. Export posters and sprays at 128 by 128.
+
+If `ImageIO` cannot read the file, the renderer stores no image and `render` draws nothing. The command itself does not report that failure. A missing file is different: the command prints `Failed to create map, that image file does not exist` and does not touch the map.
+
+The renderer draws on every map render. It does not remove itself after the first draw.
+
+## Example
+
+```yml
+# Paint map 11 from plugins/PEUtils/mapImages/sprays/queenshocked.png
+- peimagemap id:11 filename:sprays/queenshocked.png world:world
+- give filled_map[map=11]
+```
+
+Poster filenames in this network include the posters folder. A leading slash is still concatenated after `imagefolder`, so both of these resolve under `mapImages`:
+
+```yml
+- peimagemap id:1 filename:posters/bountyposter_Alice.png world:<player.location.world.name>
+- peimagemap id:1 filename:/posters/bountyposter_Alice.png world:<player.location.world.name>
+```
+
+## See Also
+
+- Command: [peimagemap](/PE-Utils-Docs/command/peimagemap)
+- Guide: [Configuration](/PE-Utils-Docs/guide/configuration)

@@ -1,0 +1,56 @@
+---
+sidebar_position: 1
+sidebar_custom_props:
+    description: Paints a png onto a map id.
+---
+
+# `peimagemap`
+
+```js
+peimagemap id:<#> world:<world> filename:<path>
+```
+
+Paints an image file onto a Bukkit map. The file is read from `plugins/PEUtils/<imagefolder>/<filename>`. The default image folder is `mapImages`.
+
+The command takes three prefixed arguments. All three are required. The parser accepts no bare values. Denizen treats the command name as case insensitive. The registered name is `PEImageMap`.
+
+This does not create a map item. After it runs, give or frame a `filled_map` with the same map id.
+
+The comment block in `PEImageMapCommand` still shows two arguments and no world. The live parser uses the signature above.
+
+## Arguments
+
+| Argument | Input | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| id | ElementTag | yes | | Map id. Parsed with `asInt`. |
+| world | ElementTag | yes | | World name used only when the id does not exist yet. The world must be loaded. |
+| filename | ElementTag | yes | | Path under the image folder. Subfolders are allowed, for example `sprays/queenshocked.png`. |
+
+## Behavior
+
+1. Resolve the file. If it does not exist, print `Failed to create map, that image file does not exist` and stop.
+2. Resolve the world with `Bukkit.getWorld`. If that returns null, print `The provided world does not exist or is not loaded` and stop.
+3. Load the map view. Reuse `Bukkit.getMap(id)` when it exists. Otherwise mint maps with `createMap` until the new id is greater than or equal to the requested id.
+4. Clear every renderer on that view.
+5. Add `MapImageRenderer`, which reads the file and draws it at `0, 0`.
+
+Resize to 128 by 128 happens only when both sides differ from 128. A file that is already 128 on one side is drawn without scaling.
+
+A minted id can differ from the requested id when the server's next map id has already moved past it. See [Image Maps](/PE-Utils-Docs/guide/image-maps).
+
+## Examples
+
+```yml
+# Spray png. Map 11 must be the id on the filled_map in the item frame.
+- peimagemap id:11 filename:sprays/queenshocked.png world:world
+```
+
+```yml
+# Poster png written earlier under mapImages/posters/.
+- peimagemap id:<[map_id]> filename:<[image_filename]> world:<[paint_world]>
+```
+
+## See Also
+
+- Guide: [Image Maps](/PE-Utils-Docs/guide/image-maps)
+- Guide: [Configuration](/PE-Utils-Docs/guide/configuration)

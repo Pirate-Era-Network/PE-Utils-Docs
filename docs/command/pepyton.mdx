@@ -1,0 +1,53 @@
+---
+sidebar_position: 2
+sidebar_custom_props:
+    description: Runs a local Python file.
+---
+
+# `PEPyton`
+
+```js
+pepyton filename:<file> arguments:<arg|arg|...>
+```
+
+Runs a Python file from `plugins/PEUtils/<pythonfolder>/<filename>`. The default Python folder is `pythonScripts`.
+
+The registered name is `PEPyton`. Scripts call it as `pepyton`. `pepython` is not registered.
+
+The command takes two prefixed arguments. Both are required. `arguments` is a Denizen list. Entries are split on `|`.
+
+The Denizen queue does not wait. Output and the exit code are not returned.
+
+## Arguments
+
+| Argument | Input | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| filename | ElementTag | yes | | File name under the Python folder, such as `hello.py`. |
+| arguments | ListTag | yes | | Arguments appended after the script path. At least one entry is required by the parser. |
+
+## Behavior
+
+1. If `filename` or `arguments` is missing, throw `You need to specify a id, filename and world.`
+2. Resolve the file. If it does not exist, print `Failed to run python file, that file does not exist` and stop.
+3. Schedule an async task. That task starts `python3` with the absolute script path and each argument as its own argv entry.
+4. The process working directory is the script's parent folder.
+5. The task waits for the process, then drops the exit code.
+
+A failure to start `python3` prints a stack trace on the async thread.
+
+## Examples
+
+```yml
+# plugins/PEUtils/pythonScripts/hello.py
+- pepyton filename:hello.py arguments:alpha|beta
+```
+
+```yml
+# The Python file ignores argv. The list still has to be present.
+- pepyton filename:tick.py arguments:run
+```
+
+## See Also
+
+- Guide: [Python Scripts](/PE-Utils-Docs/guide/python-scripts)
+- Guide: [Configuration](/PE-Utils-Docs/guide/configuration)

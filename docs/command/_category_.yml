@@ -1,0 +1,4 @@
+label: Commands
+position: 3
+customProps:
+  description: Denizen and Bukkit commands in PEUtils
